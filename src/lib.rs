@@ -41,10 +41,10 @@ pub fn compress(mut val: u64) -> Vec<u8> {
     let mut v = Vec::with_capacity(10);
 
     while val > 0 {
-        // take the first 7 bytes of the value
+        // take the least significant 7 bits of the value
         let mut byte = (val & 0b111_1111) as u8;
 
-        // decrement value
+        // shift to see next LSB groups
         val >>= 7;
 
         // Set the `follow` byte,
