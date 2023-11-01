@@ -1,5 +1,20 @@
+use std::fmt::{Display, Formatter};
+
 #[cfg(test)]
 mod tests;
+
+#[derive(Debug)]
+pub enum Error {
+    UnexpectedEndOfInput(()),
+}
+
+impl Display for Error {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Error::UnexpectedEndOfInput(_) => f.write_str("End of input reached")
+        }
+    }
+}
 
 pub fn compress(mut val: u64) -> Vec<u8> {
     if val == 0 {
@@ -40,7 +55,7 @@ pub fn compress_list(vs: &[u64]) -> Vec<u8> {
 
 /// decompresses a string, returning the rest of the input as second argument.
 /// If an error occured, it means that more data was expected
-pub fn decompress(data: &[u8]) -> Result<(u64, &[u8]), &str> {
+pub fn decompress(data: &[u8]) -> Result<(u64, &[u8]), Error> {
     let mut val = 0u64;
 
     for i in 0..data.len() {
@@ -69,10 +84,10 @@ pub fn decompress(data: &[u8]) -> Result<(u64, &[u8]), &str> {
         return Ok((val, rest));
     }
 
-    Err("end of input reached")
+    Err(Error::UnexpectedEndOfInput(()))
 }
 
-pub fn decompress_n<const N: usize>(mut data: &[u8]) -> Result<([u64; N], &[u8]), &str> {
+pub fn decompress_n<const N: usize>(mut data: &[u8]) -> Result<([u64; N], &[u8]), Error> {
     let mut out = [0; N];
     for entry in out.iter_mut() {
         let (val, rest) = decompress(data)?;
@@ -83,7 +98,7 @@ pub fn decompress_n<const N: usize>(mut data: &[u8]) -> Result<([u64; N], &[u8])
     Ok((out, data))
 }
 
-pub fn decompress_list(mut data: &[u8]) -> Result<Vec<u64>, &str> {
+pub fn decompress_list(mut data: &[u8]) -> Result<Vec<u64>, Error> {
     let mut out = Vec::with_capacity(data.len());
     while !data.is_empty() {
         let (val, rest) = decompress(data)?;
