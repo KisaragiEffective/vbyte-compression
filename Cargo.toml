@@ -5,7 +5,7 @@ edition = "2021"
 authors  = ["Nils Martel nilsmartel@yahoo.de"]
 
 description = "variable length integer compression"
-repository = "https://github.com/nilsmartel/vbyte-compression"
+repository = "https://github.com/KisaragiEffective/vbyte-compression"
 readme = "./README.md"
 license = "MIT OR Apache-2.0"
 keywords = ["compression", "int", "integer", "variable", "single"]

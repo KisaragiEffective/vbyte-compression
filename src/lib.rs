@@ -1,4 +1,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
+#![deny(clippy::all, clippy::std_instead_of_alloc, clippy::std_instead_of_core)]
+#![warn(clippy::nursery, clippy::pedantic)]
+#![allow(clippy::cast_lossless)]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
@@ -20,13 +23,15 @@ pub enum Error {
 }
 
 impl Display for Error {
+    #[allow(clippy::ignored_unit_patterns)]
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         match self {
-            Error::UnexpectedEndOfInput(_) => f.write_str("End of input reached")
+            Self::UnexpectedEndOfInput(_) => f.write_str("End of input reached")
         }
     }
 }
 
+#[must_use]
 pub fn compress(mut val: u64) -> Vec<u8> {
     if val == 0 {
         return vec![0];
@@ -54,6 +59,7 @@ pub fn compress(mut val: u64) -> Vec<u8> {
     v
 }
 
+#[must_use]
 pub fn compress_list(vs: &[u64]) -> Vec<u8> {
     let mut buffer = Vec::new();
     for v in vs {
@@ -65,7 +71,8 @@ pub fn compress_list(vs: &[u64]) -> Vec<u8> {
 }
 
 /// decompresses a string, returning the rest of the input as second argument.
-/// If an error occured, it means that more data was expected
+/// # Errors
+/// Error occurs when more data was expected
 pub fn decompress(data: &[u8]) -> Result<(u64, &[u8]), Error> {
     let mut val = 0u64;
 
@@ -98,9 +105,12 @@ pub fn decompress(data: &[u8]) -> Result<(u64, &[u8]), Error> {
     Err(Error::UnexpectedEndOfInput(()))
 }
 
+/// decompresses a string, returning the rest of the input as second argument.
+/// # Errors
+/// Error occurs when more data was expected
 pub fn decompress_n<const N: usize>(mut data: &[u8]) -> Result<([u64; N], &[u8]), Error> {
     let mut out = [0; N];
-    for entry in out.iter_mut() {
+    for entry in &mut out {
         let (val, rest) = decompress(data)?;
         *entry = val;
         data = rest;
@@ -109,6 +119,9 @@ pub fn decompress_n<const N: usize>(mut data: &[u8]) -> Result<([u64; N], &[u8])
     Ok((out, data))
 }
 
+/// decompresses a string, returning the rest of the input as second argument.
+/// # Errors
+/// Error occurs when more data was expected
 pub fn decompress_list(mut data: &[u8]) -> Result<Vec<u64>, Error> {
     let mut out = Vec::with_capacity(data.len());
     while !data.is_empty() {
