@@ -37,7 +37,8 @@ pub fn compress(mut val: u64) -> Vec<u8> {
         return vec![0];
     }
 
-    let mut v = Vec::new();
+    // In worst case, we need 10 bytes to encode 0xFFFF_FFFF_FFFF_FFFF
+    let mut v = Vec::with_capacity(10);
 
     while val > 0 {
         // take the first 7 bytes of the value
@@ -61,7 +62,8 @@ pub fn compress(mut val: u64) -> Vec<u8> {
 
 #[must_use]
 pub fn compress_list(vs: &[u64]) -> Vec<u8> {
-    let mut buffer = Vec::new();
+    // we need vs.len() bytes at least
+    let mut buffer = Vec::with_capacity(vs.len());
     for v in vs {
         let c = compress(*v);
         buffer.extend(c);
