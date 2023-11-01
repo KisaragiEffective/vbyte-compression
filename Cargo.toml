@@ -9,8 +9,13 @@ repository = "https://github.com/nilsmartel/vbyte-compression"
 readme = "./README.md"
 license = "MIT OR Apache-2.0"
 keywords = ["compression", "int", "integer", "variable", "single"]
-categories = ["algorithms", "compression"]
+categories = ["algorithms", "compression", "no-std"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+default = ["std"]
+std = ["alloc"]
+alloc = []
 
 [dependencies]

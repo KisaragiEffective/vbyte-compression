@@ -1,4 +1,15 @@
-use std::fmt::{Display, Formatter};
+#![cfg_attr(not(feature = "std"), no_std)]
+
+#[cfg(feature = "alloc")]
+extern crate alloc;
+
+#[cfg(not(feature = "alloc"))]
+compile_error!("This crate requires allocation");
+
+use core::fmt::{Display, Formatter};
+use alloc::vec::Vec;
+// for vec! macro
+use alloc::vec;
 
 #[cfg(test)]
 mod tests;
@@ -9,7 +20,7 @@ pub enum Error {
 }
 
 impl Display for Error {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         match self {
             Error::UnexpectedEndOfInput(_) => f.write_str("End of input reached")
         }
